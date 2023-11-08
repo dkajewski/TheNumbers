@@ -1,0 +1,78 @@
+$screen-background: #121010;
+
+body {
+  margin: 0;
+  background: #000;
+}
+
+.screen {
+  border-radius: 0.5em;
+  flex: 1;
+  color: #008f11;
+  font-size: 1.5em;
+  line-height: 1;
+  text-shadow: 0.12rem 0 0.12rem #003b00, -0.1rem 0 0.1rem #27750d;
+  letter-spacing: 0.125em;
+  animation-duration: 0.03s;
+  animation-name: text-flicker;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  background: $screen-background;
+  position: relative;
+  padding: 20px;
+  overflow: hidden;
+
+  // flicker
+  &::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: transparentize($screen-background, 0.9);
+    opacity: 0;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  // scanlines
+  &::before {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(transparentize($screen-background, 1) 50%, transparentize(darken($screen-background, 10), 0.75) 50%), linear-gradient(90deg, transparentize(#ff0000, 0.94), transparentize(#00ff00, 0.98), transparentize(#0000ff, 0.94));
+    z-index: 2;
+    background-size: 100% 2px, 3px 100%;
+    pointer-events: none;
+  }
+}
+
+@keyframes text-flicker {
+  from {
+    text-shadow: 1px 0 0 #003b00, 1px 0 0 #27750d;
+  }
+  to {
+    text-shadow: 2px 0.5px 2px #003b00, -1px -0.5px 2px #27750d;
+  }
+}
+
+.outer-frame {
+  height: 26em;
+  border-radius: 1em;
+  overflow: hidden;
+}
+
+.inner-frame {
+  display: flex;
+  background: #313131;
+  padding: 1em;
+  height: calc(100% - 2em);
+}
+
+
