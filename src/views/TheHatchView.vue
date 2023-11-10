@@ -1,5 +1,8 @@
 <template>
-    <div class="monitor">
+    <div class="not-visible">
+        <textarea id="terminal-input" ref="terminalInput" v-model="terminalInput"></textarea>
+    </div>
+    <div class="monitor" @click="focusTerminalInput()">
         <!-- todo: frame looks awful, it needs to look nice -->
         <div class="outer-frame">
             <div class="inner-frame">
@@ -16,6 +19,7 @@
 export default {
     data() {
         return {
+            terminalInput: '',
             terminalContent: ['> hello world'],
         }
     },
@@ -25,33 +29,30 @@ export default {
             if (e.key === 'Enter') {
                 this.executeCommand();
             }
-
-            if (e.key === 'Backspace') {
-                this.deleteLastCharacter();
-            }
-
-            if (e.key.length === 1) {
-                this.updateCurrentCommandLine(e.key);
-            }
         });
     },
     methods: {
         executeCommand: function() {
-            this.terminalContent.push('');
+            this.terminalContent.push(this.terminalInput);
+            this.terminalInput = '';
         },
-        updateCurrentCommandLine: function(key) {
+        focusTerminalInput: function() {
+            this.$refs.terminalInput.focus();
+        },
+        updateCurrentCommandLine: function() {
             if (this.terminalContent.length === 0) {
-                this.terminalContent.push('');
+                this.terminalContent.push(this.terminalInput);
             }
 
-            this.terminalContent[this.terminalContent.length - 1] += key;
+            this.terminalContent[this.terminalContent.length - 1] = this.terminalInput;
         },
-        deleteLastCharacter: function() {
-            if (this.terminalContent.length === 0) {
-                return;
-            }
-
-            this.terminalContent[this.terminalContent.length - 1] = this.terminalContent[this.terminalContent.length - 1].slice(0, -1);
+    },
+    mounted() {
+        this.focusTerminalInput();
+    },
+    watch: {
+        terminalInput: function() {
+            this.updateCurrentCommandLine();
         }
     }
 }
