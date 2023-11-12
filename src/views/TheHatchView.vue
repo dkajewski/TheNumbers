@@ -7,9 +7,17 @@
         <div class="outer-frame">
             <div class="inner-frame">
                 <div class="screen">
-                    <div v-for="line in terminalContent">
-                        {{ line }}
-                    </div>
+                    <table v-for="(line, index) in terminalContent">
+                        <tr class="terminal-line">
+                            <td class="terminal-line-prefix">&gt;&nbsp;</td>
+                            <td class="break-anywhere">
+                                {{ line }}<span
+                                        v-bind:class="{'terminal-cursor': !typingActive}"
+                                        v-if="(line === terminalContent[terminalContent.length - 1] && terminalContent.length - 1 === index)"
+                                    >&#x25AE;</span>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
@@ -20,7 +28,9 @@ export default {
     data() {
         return {
             terminalInput: '',
-            terminalContent: ['> hello world'],
+            terminalContent: [''],
+            typingActive: false,
+            lastTypedKeyTimestamp: 0,
         }
     },
     created() {
@@ -29,7 +39,12 @@ export default {
             if (e.key === 'Enter') {
                 this.executeCommand();
             }
+
+            this.typingActive = true;
+            this.lastTypedKeyTimestamp = Date.now();
         });
+
+        setInterval(this.toggleCursorAnimationModel, 1000);
     },
     methods: {
         executeCommand: function() {
@@ -46,6 +61,11 @@ export default {
 
             this.terminalContent[this.terminalContent.length - 1] = this.terminalInput;
         },
+        toggleCursorAnimationModel: function() {
+            if (Date.now() - this.lastTypedKeyTimestamp > 100) {
+                this.typingActive = false;
+            }
+        }
     },
     mounted() {
         this.focusTerminalInput();

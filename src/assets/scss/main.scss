@@ -1,4 +1,5 @@
-$screen-background: #121010;
+@import 'variables.scss';
+@import 'animations.scss';
 
 body {
   margin: 0;
@@ -8,7 +9,7 @@ body {
 .screen {
   border-radius: 0.5em;
   flex: 1;
-  color: #008f11;
+  color: $terminal-font-color;
   font-size: 1.5em;
   line-height: 1;
   text-shadow: 0.12rem 0 0.12rem #003b00, -0.1rem 0 0.1rem #27750d;
@@ -19,7 +20,7 @@ body {
   animation-direction: alternate;
   background: $screen-background;
   position: relative;
-  padding: 20px;
+  padding: 14px;
   overflow: hidden;
 
   // flicker
@@ -53,15 +54,6 @@ body {
   }
 }
 
-@keyframes text-flicker {
-  from {
-    text-shadow: 1px 0 0 #003b00, 1px 0 0 #27750d;
-  }
-  to {
-    text-shadow: 2px 0.5px 2px #003b00, -1px -0.5px 2px #27750d;
-  }
-}
-
 .outer-frame {
   height: 26em;
   border-radius: 1em;
@@ -81,4 +73,16 @@ body {
   z-index: -1;
 }
 
+.break-anywhere {
+  word-wrap: anywhere;
+}
+
+.terminal-line-prefix {
+  vertical-align: top;
+}
+
+.terminal-cursor {
+  animation: fade-in-out 1.2s linear forwards;
+  animation-iteration-count: infinite;
+}
 

@@ -1,0 +1,19 @@
+@import "variables.scss";
+
+@keyframes text-flicker {
+  from {
+    text-shadow: 1px 0 0 #003b00, 1px 0 0 #27750d;
+  }
+  to {
+    text-shadow: 2px 0.5px 2px #003b00, -1px -0.5px 2px #27750d;
+  }
+}
+
+@keyframes fade-in-out {
+  0%, 12%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
