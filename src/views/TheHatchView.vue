@@ -7,11 +7,13 @@
         <div class="outer-frame">
             <div class="inner-frame">
                 <div class="screen">
-                    <table v-for="(line, index) in terminalContent">
-                        <tr class="terminal-line">
+                    <table>
+                        <tr v-for="(line, index) in terminalContent" class="terminal-line">
                             <td class="terminal-line-prefix">&gt;&nbsp;</td>
                             <td class="break-anywhere">
-                                {{ line }}<span
+                                <span v-for="(letter, i) in getStringAsArray(index)" v-bind:id="`line-${index}-letter-${i}`">
+                                    {{ letter }}
+                                </span><span
                                         v-bind:class="{'terminal-cursor': !typingActive}"
                                         v-if="(line === terminalContent[terminalContent.length - 1] && terminalContent.length - 1 === index)"
                                     >&#x25AE;</span>
@@ -53,6 +55,9 @@ export default {
         },
         focusTerminalInput: function() {
             this.$refs.terminalInput.focus();
+        },
+        getStringAsArray: function(lineIndex) {
+            return this.terminalContent[lineIndex].split('');
         },
         updateCurrentCommandLine: function() {
             if (this.terminalContent.length === 0) {
