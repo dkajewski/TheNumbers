@@ -13,8 +13,11 @@
                             <td class="break-anywhere">
                                 <span v-for="(letter, i) in getStringAsArray(index)" v-bind:id="`line-${index}-letter-${i}`">
                                     {{ letter }}
-                                </span><span
-                                        v-bind:class="{'terminal-cursor': !typingActive}"
+                                </span><span id="cursor"
+                                        v-bind:class="{
+                                            'terminal-cursor': !typingActive,
+                                            'cursor-absolute': !cursorPositionDefault,
+                                        }"
                                         v-if="(line === terminalContent[terminalContent.length - 1] && terminalContent.length - 1 === index)"
                                     >&#x25AE;</span>
                             </td>
@@ -33,6 +36,11 @@ export default {
             terminalContent: [''],
             typingActive: false,
             lastTypedKeyTimestamp: 0,
+            currentCursorPosition: {
+                line: 0,
+                letter: 0
+            },
+            cursorPositionDefault: true
         }
     },
     created() {
@@ -40,6 +48,16 @@ export default {
             console.log(e.key);
             if (e.key === 'Enter') {
                 this.executeCommand();
+                this.currentCursorPosition.line++;
+                this.currentCursorPosition.letter = 0;
+                this.cursorPositionDefault = true;
+
+                return;
+            }
+
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                this.cursorPositionDefault = false;
+                this.handleCursorPosition(e.key);
             }
 
             this.typingActive = true;
@@ -59,18 +77,41 @@ export default {
         getStringAsArray: function(lineIndex) {
             return this.terminalContent[lineIndex].split('');
         },
+        handleCursorPosition: function(key) {
+            if (key === 'ArrowLeft') {
+                if (this.currentCursorPosition.letter > 0) {
+                    this.currentCursorPosition.letter--;
+                }
+            }
+
+            if (key === 'ArrowRight') {
+                if (this.currentCursorPosition.letter < this.terminalContent[this.currentCursorPosition.line].length) {
+                    this.currentCursorPosition.letter++;
+                }
+            }
+
+            if (!this.cursorPositionDefault) {
+
+                let offset = document.getElementById('line-' + this.currentCursorPosition.line + '-letter-' + (this.currentCursorPosition.letter)).offsetLeft;
+                document.getElementById('cursor').style.left = offset + 'px';
+            }
+        },
+        toggleCursorAnimationModel: function() {
+
+            if (Date.now() - this.lastTypedKeyTimestamp > 100) {
+              this.typingActive = false;
+            }
+        },
         updateCurrentCommandLine: function() {
+            this.currentCursorPosition.letter++;
+            console.log(this.currentCursorPosition);
             if (this.terminalContent.length === 0) {
                 this.terminalContent.push(this.terminalInput);
             }
 
             this.terminalContent[this.terminalContent.length - 1] = this.terminalInput;
         },
-        toggleCursorAnimationModel: function() {
-            if (Date.now() - this.lastTypedKeyTimestamp > 100) {
-                this.typingActive = false;
-            }
-        }
+
     },
     mounted() {
         this.focusTerminalInput();
