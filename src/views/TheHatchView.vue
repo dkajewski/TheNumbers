@@ -40,7 +40,22 @@ export default {
                 line: 0,
                 letter: 0
             },
-            cursorPositionDefault: true
+            cursorPositionDefault: true,
+            functionalKeys: [
+                'Enter',
+                'ArrowLeft',
+                'ArrowRight',
+                'ArrowUp',
+                'ArrowDown',
+                'Backspace',
+                'Delete',
+                'Control',
+                'F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10', 'F11', 'F12',
+                'Shift',
+                'Alt',
+                'CapsLock',
+                'AltGraph',
+            ]
         }
     },
     created() {
@@ -58,6 +73,15 @@ export default {
             if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                 this.cursorPositionDefault = false;
                 this.handleCursorPosition(e.key);
+            }
+
+            if (e.key === 'Backspace') {
+                this.currentCursorPosition.letter--;
+            }
+
+
+            if (!this.functionalKeys.includes(e.key)) {
+                this.currentCursorPosition.letter++;
             }
 
             this.typingActive = true;
@@ -88,13 +112,16 @@ export default {
                 if (this.currentCursorPosition.letter < this.terminalContent[this.currentCursorPosition.line].length) {
                     this.currentCursorPosition.letter++;
                 }
+
+                if (this.currentCursorPosition.letter === this.terminalContent[this.currentCursorPosition.line].length) {
+                    this.cursorPositionDefault = true;
+                    document.getElementById('cursor').style.left = '0px';
+
+                    return;
+                }
             }
 
-            if (!this.cursorPositionDefault) {
-
-                let offset = document.getElementById('line-' + this.currentCursorPosition.line + '-letter-' + (this.currentCursorPosition.letter)).offsetLeft;
-                document.getElementById('cursor').style.left = offset + 'px';
-            }
+            this.updateCursorPosition();
         },
         toggleCursorAnimationModel: function() {
 
@@ -103,13 +130,25 @@ export default {
             }
         },
         updateCurrentCommandLine: function() {
-            this.currentCursorPosition.letter++;
-            console.log(this.currentCursorPosition);
             if (this.terminalContent.length === 0) {
                 this.terminalContent.push(this.terminalInput);
             }
 
             this.terminalContent[this.terminalContent.length - 1] = this.terminalInput;
+            if (!this.cursorPositionDefault) {
+                this.updateCursorPosition();
+            }
+        },
+        updateCursorPosition: function() {
+            if (this.cursorPositionDefault) {
+                return;
+            }
+
+            let cursor = document.getElementById('cursor');
+            let elementId = 'line-' + this.currentCursorPosition.line + '-letter-' + (this.currentCursorPosition.letter);
+            let focusLetter = document.getElementById(elementId)
+            let offset = focusLetter.offsetLeft + (focusLetter.getBoundingClientRect().width) + (cursor.getBoundingClientRect().width);
+            document.getElementById('cursor').style.left = offset + 'px';
         },
 
     },
