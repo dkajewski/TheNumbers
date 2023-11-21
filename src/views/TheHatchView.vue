@@ -11,15 +11,16 @@
                         <tr v-for="(line, index) in terminalContent" class="terminal-line">
                             <td class="terminal-line-prefix">&gt;&nbsp;</td>
                             <td class="break-anywhere">
-                                <span v-for="(letter, i) in getStringAsArray(index)" v-bind:id="`line-${index}-letter-${i}`">
+                                <span v-for="(letter, i) in getStringAsArray(index)"
+                                      v-bind:id="`line-${index}-letter-${i}`">
                                     {{ letter }}
                                 </span><span id="cursor"
-                                        v-bind:class="{
+                                             v-bind:class="{
                                             'terminal-cursor': !typingActive,
                                             'cursor-absolute': !cursorPositionDefault,
                                         }"
-                                        v-if="(line === terminalContent[terminalContent.length - 1] && terminalContent.length - 1 === index)"
-                                    >&#x25AE;</span>
+                                             v-if="(line === terminalContent[terminalContent.length - 1] && terminalContent.length - 1 === index)"
+                            >&#x25AE;</span>
                             </td>
                         </tr>
                     </table>
@@ -91,17 +92,17 @@ export default {
         setInterval(this.toggleCursorAnimationModel, 1000);
     },
     methods: {
-        executeCommand: function() {
+        executeCommand: function () {
             this.terminalContent.push(this.terminalInput);
             this.terminalInput = '';
         },
-        focusTerminalInput: function() {
+        focusTerminalInput: function () {
             this.$refs.terminalInput.focus();
         },
-        getStringAsArray: function(lineIndex) {
+        getStringAsArray: function (lineIndex) {
             return this.terminalContent[lineIndex].split('');
         },
-        handleCursorPosition: function(key) {
+        handleCursorPosition: function (key) {
             if (key === 'ArrowLeft') {
                 if (this.currentCursorPosition.letter > 0) {
                     this.currentCursorPosition.letter--;
@@ -123,13 +124,13 @@ export default {
 
             this.updateCursorPosition();
         },
-        toggleCursorAnimationModel: function() {
+        toggleCursorAnimationModel: function () {
 
             if (Date.now() - this.lastTypedKeyTimestamp > 100) {
-              this.typingActive = false;
+                this.typingActive = false;
             }
         },
-        updateCurrentCommandLine: function() {
+        updateCurrentCommandLine: function () {
             if (this.terminalContent.length === 0) {
                 this.terminalContent.push(this.terminalInput);
             }
@@ -139,7 +140,7 @@ export default {
                 this.updateCursorPosition();
             }
         },
-        updateCursorPosition: function() {
+        updateCursorPosition: function () {
             if (this.cursorPositionDefault) {
                 return;
             }
@@ -156,7 +157,7 @@ export default {
         this.focusTerminalInput();
     },
     watch: {
-        terminalInput: function() {
+        terminalInput: function () {
             this.updateCurrentCommandLine();
         }
     }

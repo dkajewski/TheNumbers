@@ -1,4 +1,5 @@
 @import 'variables.scss';
+@import 'font.scss';
 @import 'animations.scss';
 
 body {
@@ -10,6 +11,7 @@ body {
   border-radius: 0.5em;
   flex: 1;
   color: $terminal-font-color;
+  font-family: VT323, serif;
   font-size: 1.5em;
   line-height: 1;
   text-shadow: 0.12rem 0 0.12rem #003b00, -0.1rem 0 0.1rem #27750d;
@@ -88,4 +90,10 @@ body {
 
 .cursor-absolute {
   position: absolute;
+}
+
+#cursor {
+  &:not(.cursor-absolute) {
+    margin-left: -0.2em
+  }
 }
