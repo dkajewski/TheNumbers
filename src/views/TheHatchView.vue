@@ -63,6 +63,7 @@ export default {
         window.addEventListener('keydown', (e) => {
             console.log(e.key);
             if (e.key === 'Enter') {
+                e.preventDefault();
                 this.executeCommand();
                 this.currentCursorPosition.line++;
                 this.currentCursorPosition.letter = 0;
@@ -147,7 +148,11 @@ export default {
 
             let cursor = document.getElementById('cursor');
             let elementId = 'line-' + this.currentCursorPosition.line + '-letter-' + (this.currentCursorPosition.letter);
-            let focusLetter = document.getElementById(elementId)
+            let focusLetter = document.getElementById(elementId);
+            if (focusLetter === null) {
+                focusLetter = document.getElementById('line-' + this.currentCursorPosition.line + '-letter-' + (this.currentCursorPosition.letter - 1));
+            }
+
             let offset = focusLetter.offsetLeft + (focusLetter.getBoundingClientRect().width) + (cursor.getBoundingClientRect().width);
             document.getElementById('cursor').style.left = offset + 'px';
         },
