@@ -56,7 +56,7 @@ export default {
                 'Alt',
                 'CapsLock',
                 'AltGraph',
-            ]
+            ],
         }
     },
     created() {
@@ -75,15 +75,20 @@ export default {
             if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
                 this.cursorPositionDefault = false;
                 this.handleCursorPosition(e.key);
+                return;
             }
 
             if (e.key === 'Backspace') {
                 this.currentCursorPosition.letter--;
+                return;
             }
 
-
             if (!this.functionalKeys.includes(e.key)) {
-                this.currentCursorPosition.letter++;
+                if (this.cursorPositionDefault) {
+                    this.currentCursorPosition.letter++;
+                }
+
+                this.updateCurrentCommandLine(e.key);
             }
 
             this.typingActive = true;
@@ -114,13 +119,6 @@ export default {
                 if (this.currentCursorPosition.letter < this.terminalContent[this.currentCursorPosition.line].length) {
                     this.currentCursorPosition.letter++;
                 }
-
-                if (this.currentCursorPosition.letter === this.terminalContent[this.currentCursorPosition.line].length) {
-                    this.cursorPositionDefault = true;
-                    document.getElementById('cursor').style.left = '0px';
-
-                    return;
-                }
             }
 
             this.updateCursorPosition();
@@ -131,18 +129,32 @@ export default {
                 this.typingActive = false;
             }
         },
-        updateCurrentCommandLine: function () {
-            if (this.terminalContent.length === 0) {
-                this.terminalContent.push(this.terminalInput);
+        updateCurrentCommandLine: function (key) {
+            let currentLine;
+            if (this.cursorPositionDefault) {
+                currentLine = this.terminalContent[this.terminalContent.length - 1] + key;
+            } else {
+                let contentToCursorPosition = this.terminalContent[this.terminalContent.length - 1].substring(0, this.currentCursorPosition.letter);
+                let contentAfterCursorPosition = this.terminalContent[this.terminalContent.length - 1].substring(this.currentCursorPosition.letter);
+                currentLine = contentToCursorPosition + key + contentAfterCursorPosition;
             }
 
-            this.terminalContent[this.terminalContent.length - 1] = this.terminalInput;
+            this.terminalContent[this.terminalContent.length - 1] = currentLine;
             if (!this.cursorPositionDefault) {
                 this.updateCursorPosition();
             }
         },
         updateCursorPosition: function () {
             if (this.cursorPositionDefault) {
+                return;
+            }
+
+            if (this.currentCursorPosition.letter === this.terminalContent[this.terminalContent.length - 1].length) {
+                if (this.currentCursorPosition.line > this.terminalContent[this.terminalContent.length - 1].length) {
+                    this.currentCursorPosition.letter--;
+                }
+                this.cursorPositionDefault = true;
+                document.getElementById('cursor').style.left = '0px';
                 return;
             }
 
@@ -161,10 +173,6 @@ export default {
     mounted() {
         this.focusTerminalInput();
     },
-    watch: {
-        terminalInput: function () {
-            this.updateCurrentCommandLine();
-        }
-    }
+    watch: {}
 }
 </script>
