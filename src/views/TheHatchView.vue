@@ -99,8 +99,8 @@ export default {
     },
     methods: {
         executeCommand: function () {
-            this.terminalContent.push(this.terminalInput);
             this.terminalInput = '';
+            this.terminalContent.push('');
         },
         focusTerminalInput: function () {
             this.$refs.terminalInput.focus();
@@ -165,8 +165,11 @@ export default {
                 focusLetter = document.getElementById('line-' + this.currentCursorPosition.line + '-letter-' + (this.currentCursorPosition.letter - 1));
             }
 
-            let offset = focusLetter.offsetLeft + (focusLetter.getBoundingClientRect().width) + (cursor.getBoundingClientRect().width);
+            // idk why this needs calculations like that, but it works
+            let focusLetterRect = focusLetter.getBoundingClientRect();
+            let offset = (focusLetter.getBoundingClientRect().left) - (focusLetterRect.width) - (cursor.getBoundingClientRect().width / 4);
             document.getElementById('cursor').style.left = offset + 'px';
+            document.getElementById('cursor').style.top = (focusLetterRect.top - (focusLetterRect.height / 2) - 4) + 'px';
         },
 
     },
