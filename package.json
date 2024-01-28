@@ -9,6 +9,7 @@
     "test:unit": "vitest"
   },
   "dependencies": {
+    "@pqina/flip": "github:pqina/flip",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6"
   },

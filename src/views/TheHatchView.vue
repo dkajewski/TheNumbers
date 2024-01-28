@@ -1,7 +1,11 @@
+<script setup>
+import Clock from '../components/Clock.vue';
+</script>
 <template>
     <div class="not-visible">
         <textarea id="terminal-input" ref="terminalInput" v-model="terminalInput"></textarea>
     </div>
+    <Clock />
     <div class="monitor" @click="focusTerminalInput()">
         <!-- todo: frame looks awful, it needs to look nice -->
         <div class="outer-frame">
@@ -167,7 +171,7 @@ export default {
 
             // idk why this needs calculations like that, but it works
             let focusLetterRect = focusLetter.getBoundingClientRect();
-            let offset = (focusLetter.getBoundingClientRect().left) - (focusLetterRect.width) - (cursor.getBoundingClientRect().width / 4);
+            let offset = (focusLetterRect.left) - (focusLetterRect.width) - (cursor.getBoundingClientRect().width / 4) - 4;
             document.getElementById('cursor').style.left = offset + 'px';
             document.getElementById('cursor').style.top = (focusLetterRect.top - (focusLetterRect.height / 2) - 4) + 'px';
         },
