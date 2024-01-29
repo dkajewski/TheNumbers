@@ -10,7 +10,14 @@ import Tick from '@pqina/flip';
 
 export default {
     data() {
-        return {}
+        return {
+            mainClockProps: {
+                interval: Tick.helper.duration(60, 'seconds'),
+                valuePerInterval: 1,
+                dateOffset: Date.now(),
+                valueOffset: 108,
+            },
+        }
     },
     created() {
 
@@ -19,20 +26,15 @@ export default {
 
     },
     mounted() {
-        console.log(Tick);
-        // create a ticker on an element with options
-        var element = document.getElementById('clock');
-        var tick = Tick.DOM.create(element, {
-            value: 1000,
-            didInit: function(tick) {
-                console.log('hello!');
-                Tick.helper.interval(function() {
-
-                    tick.value--;
-
-                    // Set `aria-label` attribute which screenreaders will read instead of HTML content
-                    tick.root.setAttribute('aria-label', tick.value);
-
+        let element = document.getElementById('clock');
+        Tick.DOM.create(element, {
+            value: this.mainClockProps.valueOffset,
+            didInit: (tick) => {
+                Tick.helper.interval(() => {
+                    let now = Date.now();
+                    let diff = now - this.mainClockProps.dateOffset;
+                    let loops = Math.floor(diff / this.mainClockProps.interval);
+                    tick.value = this.mainClockProps.valueOffset - (loops * this.mainClockProps.valuePerInterval);
                 }, 1000);
             }
         });
