@@ -4,6 +4,11 @@
             <span data-view="flip"></span>
         </span>
     </div>
+    <div id="minutes" class="tick">
+        <span data-repeat="true" id="light-flip">
+            <span data-view="flip"></span>
+        </span>
+    </div>
 </template>
 <script>
 import Tick from '@pqina/flip';
@@ -11,19 +16,54 @@ import Tick from '@pqina/flip';
 export default {
     data() {
         return {
+            secondsClockStarted: false,
             mainClockProps: {
                 interval: Tick.helper.duration(60, 'seconds'),
                 valuePerInterval: 1,
                 dateOffset: Date.now(),
                 valueOffset: 108,
+                currentValue: 108,
             },
+            secondsClock: {
+                interval: Tick.helper.duration(1, 'seconds'),
+                dateOffset: null,
+                valuePerInterval: 1,
+                currentValue: 59,
+                valueOffset: 59,
+            }
         }
     },
     created() {
 
     },
     methods: {
+        startSecondsClock: function() {
+            if (this.secondsClockStarted) {
+                return;
+            }
 
+            this.secondsClock.dateOffset = Date.now();
+            let element = document.getElementById('minutes');
+            Tick.DOM.create(element, {
+                value: this.secondsClock.valueOffset,
+                didInit: (tick) => {
+                    Tick.helper.interval(() => {
+                        let now = Date.now();
+                        let diff = now - this.secondsClock.dateOffset;
+                        let loops = Math.floor(diff / this.secondsClock.interval);
+                        this.secondsClock.currentValue = this.secondsClock.valueOffset - (loops * this.secondsClock.valuePerInterval);
+                        if (this.secondsClock.currentValue === -1) {
+                            this.secondsClock.dateOffset += 60000;
+                            this.secondsClock.currentValue = 59;
+                        }
+
+                        tick.value = ('0' + this.secondsClock.currentValue).slice(-2);
+                    }, 1000);
+                }
+            });
+
+            this.secondsClockStarted = true;
+        }
     },
     mounted() {
         let element = document.getElementById('clock');
@@ -34,7 +74,11 @@ export default {
                     let now = Date.now();
                     let diff = now - this.mainClockProps.dateOffset;
                     let loops = Math.floor(diff / this.mainClockProps.interval);
-                    tick.value = this.mainClockProps.valueOffset - (loops * this.mainClockProps.valuePerInterval);
+                    this.mainClockProps.currentValue = this.mainClockProps.valueOffset - (loops * this.mainClockProps.valuePerInterval);
+                    if (this.mainClockProps.currentValue <= 108) {
+                        this.startSecondsClock();
+                    }
+                    tick.value = this.mainClockProps.currentValue;
                 }, 1000);
             }
         });
