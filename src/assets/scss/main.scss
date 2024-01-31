@@ -103,3 +103,17 @@ body {
   color: #555;
   background-color: #fafafa;
 }
+
+.tick {
+  font-size: 2em;
+}
+
+.clock-container {
+  display: flex;
+  background: -webkit-linear-gradient(left,  #0f182b 0%,#2a3b53 33%,#2a3b53 66%,#0f182b 100%);
+}
+
+.clock-frame {
+  display: flex;
+  justify-content: center;
+}

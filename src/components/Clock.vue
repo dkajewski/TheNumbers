@@ -1,14 +1,19 @@
 <template>
-    <div id="clock" class="tick">
-        <span data-repeat="true">
-            <span data-view="flip"></span>
-        </span>
+    <div class="clock-frame">
+        <div class="clock-container">
+            <div id="clock" class="tick">
+                <span data-repeat="true">
+                    <span data-view="flip"></span>
+                </span>
+            </div>
+            <div id="minutes" class="tick">
+                <span data-repeat="true" id="light-flip">
+                    <span data-view="flip"></span>
+                </span>
+            </div>
+        </div>
     </div>
-    <div id="minutes" class="tick">
-        <span data-repeat="true" id="light-flip">
-            <span data-view="flip"></span>
-        </span>
-    </div>
+
 </template>
 <script>
 import Tick from '@pqina/flip';
@@ -57,7 +62,12 @@ export default {
                             this.secondsClock.currentValue = 59;
                         }
 
-                        tick.value = ('0' + this.secondsClock.currentValue).slice(-2);
+                        if (this.mainClockProps.currentValue < 5) {
+                            tick.value = ('0' + this.secondsClock.currentValue).slice(-2);
+                        } else {
+                            tick.value = '00';
+                        }
+
                     }, 1000);
                 }
             });
@@ -72,13 +82,11 @@ export default {
             didInit: (tick) => {
                 Tick.helper.interval(() => {
                     let now = Date.now();
+                    this.startSecondsClock();
                     let diff = now - this.mainClockProps.dateOffset;
                     let loops = Math.floor(diff / this.mainClockProps.interval);
                     this.mainClockProps.currentValue = this.mainClockProps.valueOffset - (loops * this.mainClockProps.valuePerInterval);
-                    if (this.mainClockProps.currentValue <= 108) {
-                        this.startSecondsClock();
-                    }
-                    tick.value = this.mainClockProps.currentValue;
+                    tick.value = ('00' + this.mainClockProps.currentValue).slice(-3);
                 }, 1000);
             }
         });
