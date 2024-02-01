@@ -105,12 +105,16 @@ body {
 }
 
 .tick {
+  font-family: VT323, serif;
+  font-weight: bold;
   font-size: 2em;
 }
 
 .clock-container {
   display: flex;
-  background: -webkit-linear-gradient(left,  #0f182b 0%,#2a3b53 33%,#2a3b53 66%,#0f182b 100%);
+  background: -webkit-linear-gradient(left,  #868060 0%, #dfe3bf 33%, #dfe3bf 66%, #868060 100%);
+  padding: 10px;
+  border: 2px solid #54503c;
 }
 
 .clock-frame {

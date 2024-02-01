@@ -29,7 +29,7 @@ export default {
                 valueOffset: 108,
                 currentValue: 108,
             },
-            secondsClock: {
+            secondsClockProps: {
                 interval: Tick.helper.duration(1, 'seconds'),
                 dateOffset: null,
                 valuePerInterval: 1,
@@ -47,23 +47,24 @@ export default {
                 return;
             }
 
-            this.secondsClock.dateOffset = Date.now();
+            this.secondsClockProps.dateOffset = Date.now();
             let element = document.getElementById('minutes');
             Tick.DOM.create(element, {
-                value: this.secondsClock.valueOffset,
+                credits: false,
+                value: this.secondsClockProps.valueOffset,
                 didInit: (tick) => {
                     Tick.helper.interval(() => {
                         let now = Date.now();
-                        let diff = now - this.secondsClock.dateOffset;
-                        let loops = Math.floor(diff / this.secondsClock.interval);
-                        this.secondsClock.currentValue = this.secondsClock.valueOffset - (loops * this.secondsClock.valuePerInterval);
-                        if (this.secondsClock.currentValue === -1) {
-                            this.secondsClock.dateOffset += 60000;
-                            this.secondsClock.currentValue = 59;
+                        let diff = now - this.secondsClockProps.dateOffset;
+                        let loops = Math.floor(diff / this.secondsClockProps.interval);
+                        this.secondsClockProps.currentValue = this.secondsClockProps.valueOffset - (loops * this.secondsClockProps.valuePerInterval);
+                        if (this.secondsClockProps.currentValue === -1) {
+                            this.secondsClockProps.dateOffset += 60000;
+                            this.secondsClockProps.currentValue = 59;
                         }
 
                         if (this.mainClockProps.currentValue < 5) {
-                            tick.value = ('0' + this.secondsClock.currentValue).slice(-2);
+                            tick.value = ('0' + this.secondsClockProps.currentValue).slice(-2);
                         } else {
                             tick.value = '00';
                         }
@@ -78,6 +79,7 @@ export default {
     mounted() {
         let element = document.getElementById('clock');
         Tick.DOM.create(element, {
+            credits: false,
             value: this.mainClockProps.valueOffset,
             didInit: (tick) => {
                 Tick.helper.interval(() => {

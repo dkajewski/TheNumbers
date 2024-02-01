@@ -173,7 +173,7 @@ export default {
             let focusLetterRect = focusLetter.getBoundingClientRect();
             let offset = (focusLetterRect.left) - (focusLetterRect.width) - (cursor.getBoundingClientRect().width / 4) - 4;
             document.getElementById('cursor').style.left = offset + 'px';
-            document.getElementById('cursor').style.top = (focusLetterRect.top - (focusLetterRect.height / 2) - 4) + 'px';
+            document.getElementById('cursor').style.top = (focusLetter.offsetTop + (focusLetterRect.height / 2) + 4) + 'px';
         },
 
     },
