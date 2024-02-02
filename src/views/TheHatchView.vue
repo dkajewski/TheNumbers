@@ -5,7 +5,7 @@ import Clock from '../components/Clock.vue';
     <div class="not-visible">
         <textarea id="terminal-input" ref="terminalInput" v-model="terminalInput"></textarea>
     </div>
-    <Clock />
+    <Clock v-bind:clock-state="clockState"/>
     <div class="monitor" @click="focusTerminalInput()">
         <!-- todo: frame looks awful, it needs to look nice -->
         <div class="outer-frame">
@@ -37,6 +37,7 @@ import Clock from '../components/Clock.vue';
 export default {
     data() {
         return {
+            clockState: 'running',
             terminalInput: '',
             terminalContent: [''],
             typingActive: false,
