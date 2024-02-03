@@ -84,7 +84,7 @@ export default {
             }
 
             if (e.key === 'Backspace') {
-                this.currentCursorPosition.letter--;
+                this.handleBackspaceKeyAction();
                 return;
             }
 
@@ -104,6 +104,11 @@ export default {
     },
     methods: {
         executeCommand: function () {
+            let command = this.terminalContent[this.terminalContent.length - 1].trim();
+            if (command === '4 8 15 16 23 42') {
+                this.clockState = 'reset|' + Math.random();
+            }
+
             this.terminalInput = '';
             this.terminalContent.push('');
         },
@@ -128,8 +133,25 @@ export default {
 
             this.updateCursorPosition();
         },
-        toggleCursorAnimationModel: function () {
+        handleBackspaceKeyAction: function () {
+            let currentLine = this.terminalContent[this.terminalContent.length - 1];
+            if (this.cursorPositionDefault) {
+                this.terminalContent[this.terminalContent.length - 1] = currentLine.substring(0, currentLine.length - 1);
+                this.currentCursorPosition.letter--;
+            } else {
+                if (this.currentCursorPosition.letter === 0) {
+                    return;
+                }
 
+                let contentToCursorPosition = currentLine.substring(0, this.currentCursorPosition.letter - 1);
+                let contentAfterCursorPosition = currentLine.substring(this.currentCursorPosition.letter);
+                this.terminalContent[this.terminalContent.length - 1] = contentToCursorPosition + contentAfterCursorPosition;
+                this.currentCursorPosition.letter--;
+            }
+
+            this.updateCursorPosition();
+        },
+        toggleCursorAnimationModel: function () {
             if (Date.now() - this.lastTypedKeyTimestamp > 100) {
                 this.typingActive = false;
             }

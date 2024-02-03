@@ -67,7 +67,7 @@ export default {
                             this.secondsClockProps.currentValue = 59;
                         }
 
-                        if (this.mainClockProps.currentValue < 5) {
+                        if (this.mainClockProps.currentValue < 4) {
                             tick.value = ('0' + this.secondsClockProps.currentValue).slice(-2);
                         } else {
                             tick.value = '00';
@@ -80,7 +80,12 @@ export default {
             this.secondsClockStarted = true;
         },
         resetClock: function() {
-            // todo
+            if (this.mainClockProps.currentValue > 4) {
+                return;
+            }
+
+            this.secondsClockProps.dateOffset = Date.now();
+            this.mainClockProps.dateOffset = Date.now();
         },
         startMainClock: function() {
             let element = document.getElementById('clock');
@@ -109,7 +114,8 @@ export default {
     },
     watch: {
         clockState: function() {
-            if (this.clockState === 'reset') {
+            let state = this.clockState.split('|')[0];
+            if (state === 'reset') {
                 this.resetClock();
             }
         }
