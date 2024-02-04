@@ -39,13 +39,22 @@ export default {
                 valuePerInterval: 1,
                 currentValue: 59,
                 valueOffset: 59,
-            }
+            },
+            systemFailureActive: false,
         }
     },
     created() {
 
     },
     methods: {
+        systemFailure: function () {
+            if (this.systemFailureActive) {
+                return;
+            }
+
+            this.systemFailureActive = true;
+            this.$emit('system-failure', true);
+        },
         startSecondsClock: function() {
             if (this.secondsClockStarted) {
                 return;
@@ -63,8 +72,14 @@ export default {
                         let loops = Math.floor(diff / this.secondsClockProps.interval);
                         this.secondsClockProps.currentValue = this.secondsClockProps.valueOffset - (loops * this.secondsClockProps.valuePerInterval);
                         if (this.secondsClockProps.currentValue === -1) {
-                            this.secondsClockProps.dateOffset += 60000;
-                            this.secondsClockProps.currentValue = 59;
+                            if (this.mainClockProps.currentValue === 0) {
+                                this.secondsClockTimer.stop();
+                                this.secondsClockProps.currentValue = 0;
+                                this.systemFailure();
+                            } else {
+                                this.secondsClockProps.dateOffset += 60000;
+                                this.secondsClockProps.currentValue = 59;
+                            }
                         }
 
                         if (this.mainClockProps.currentValue < 4) {
@@ -86,6 +101,7 @@ export default {
 
             this.secondsClockProps.dateOffset = Date.now();
             this.mainClockProps.dateOffset = Date.now();
+            this.systemFailureActive = false;
         },
         startMainClock: function() {
             let element = document.getElementById('clock');
@@ -99,7 +115,7 @@ export default {
                         this.startSecondsClock();
                         let diff = now - this.mainClockProps.dateOffset;
                         let loops = Math.floor(diff / this.mainClockProps.interval);
-                        this.mainClockProps.currentValue = this.mainClockProps.valueOffset - (loops * this.mainClockProps.valuePerInterval);
+                        this.mainClockProps.currentValue = Math.max(this.mainClockProps.valueOffset - (loops * this.mainClockProps.valuePerInterval), 0);
                         tick.value = ('00' + this.mainClockProps.currentValue).slice(-3);
                     }, 1000);
                 }

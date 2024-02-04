@@ -5,7 +5,7 @@ import Clock from '../components/Clock.vue';
     <div class="not-visible">
         <textarea id="terminal-input" ref="terminalInput" v-model="terminalInput"></textarea>
     </div>
-    <Clock v-bind:clock-state="clockState"/>
+    <Clock v-bind:clock-state="clockState" v-on:system-failure="activateSystemFailure"/>
     <div class="monitor" @click="focusTerminalInput()">
         <!-- todo: frame looks awful, it needs to look nice -->
         <div class="outer-frame">
@@ -13,7 +13,7 @@ import Clock from '../components/Clock.vue';
                 <div class="screen">
                     <table>
                         <tr v-for="(line, index) in terminalContent" class="terminal-line">
-                            <td class="terminal-line-prefix">&gt;&nbsp;</td>
+                            <td class="terminal-line-prefix">&gt;:&nbsp;</td>
                             <td class="break-anywhere">
                                 <span v-for="(letter, i) in getStringAsArray(index)"
                                       v-bind:id="`line-${index}-letter-${i}`">
@@ -62,6 +62,7 @@ export default {
                 'CapsLock',
                 'AltGraph',
             ],
+            systemFailureActive: false,
         }
     },
     created() {
@@ -103,6 +104,9 @@ export default {
         setInterval(this.toggleCursorAnimationModel, 1000);
     },
     methods: {
+        activateSystemFailure: function (mode) {
+            console.log('System failure!' + mode);
+        },
         executeCommand: function () {
             let command = this.terminalContent[this.terminalContent.length - 1].trim();
             if (command === '4 8 15 16 23 42') {
@@ -196,7 +200,7 @@ export default {
             let focusLetterRect = focusLetter.getBoundingClientRect();
             let offset = (focusLetterRect.left) - (focusLetterRect.width) - (cursor.getBoundingClientRect().width / 4) - 4;
             document.getElementById('cursor').style.left = offset + 'px';
-            document.getElementById('cursor').style.top = (focusLetter.offsetTop + (focusLetterRect.height / 2) + 4) + 'px';
+            document.getElementById('cursor').style.top = (focusLetterRect.offsetTop + (focusLetterRect.height / 2) + 4) + 'px';
         },
 
     },
