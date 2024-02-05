@@ -41,6 +41,9 @@ export default {
                 valueOffset: 59,
             },
             systemFailureActive: false,
+            secondsTick: null,
+            mainClockTick: null,
+            systemFailureInterval: null,
         }
     },
     created() {
@@ -54,6 +57,7 @@ export default {
 
             this.systemFailureActive = true;
             this.$emit('system-failure', true);
+            this.setSystemFailureTimerValues();
         },
         startSecondsClock: function() {
             if (this.secondsClockStarted) {
@@ -66,6 +70,7 @@ export default {
                 credits: false,
                 value: this.secondsClockProps.valueOffset,
                 didInit: (tick) => {
+                    this.secondsTick = tick;
                     this.secondsClockTimer = Tick.helper.interval(() => {
                         let now = Date.now();
                         let diff = now - this.secondsClockProps.dateOffset;
@@ -99,8 +104,10 @@ export default {
                 return;
             }
 
+            clearInterval(this.systemFailureInterval);
             this.secondsClockProps.dateOffset = Date.now();
             this.mainClockProps.dateOffset = Date.now();
+            this.secondsClockTimer.reset();
             this.systemFailureActive = false;
         },
         startMainClock: function() {
@@ -110,6 +117,7 @@ export default {
                 credits: false,
                 value: this.mainClockProps.valueOffset,
                 didInit: (tick) => {
+                    this.mainClockTick = tick;
                     this.mainClockTimer = Tick.helper.interval(() => {
                         let now = Date.now();
                         this.startSecondsClock();
@@ -120,6 +128,12 @@ export default {
                     }, 1000);
                 }
             });
+        },
+        setSystemFailureTimerValues: function () {
+            this.systemFailureInterval = setInterval(() => {
+                this.secondsTick.value = Math.floor(Math.random() * 90 + 10);
+                this.mainClockTick.value = Math.floor(Math.random() * 899 + 100);
+            }, 100);
         }
     },
     mounted() {
