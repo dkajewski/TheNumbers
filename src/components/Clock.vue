@@ -2,12 +2,12 @@
     <div class="clock-frame">
         <div class="clock-container">
             <div id="clock" class="tick">
-                <span data-repeat="true">
+                <span data-repeat="true" :class="{'system-failure': systemFailureActive}">
                     <span data-view="flip"></span>
                 </span>
             </div>
             <div id="seconds" class="tick">
-                <span data-repeat="true" id="light-flip">
+                <span data-repeat="true" id="light-flip" :class="{'system-failure': systemFailureActive}">
                     <span data-view="flip"></span>
                 </span>
             </div>

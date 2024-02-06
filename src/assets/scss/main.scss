@@ -99,9 +99,29 @@ body {
   }
 }
 
-#light-flip .tick-flip-panel {
-  color: #555;
-  background-color: #fafafa;
+#light-flip {
+  &.system-failure {
+    .tick-flip-panel {
+      background: #880015;
+      color: #000;
+    }
+  }
+
+  .tick-flip-panel {
+    color: #555;
+    background-color: #fafafa;
+  }
+}
+
+#clock {
+  span {
+    &.system-failure {
+      .tick-flip-panel {
+        color: #880015;
+        background-color: #000;
+      }
+    }
+  }
 }
 
 .tick {
