@@ -11,6 +11,7 @@ import Clock from '../components/Clock.vue';
         <div class="outer-frame">
             <div class="inner-frame">
                 <div class="screen">
+<!--                    <div>&#x132f4;&#x133f2;&#x13352;&#x13142;&#x133f1;</div>-->
                     <table>
                         <tr v-for="(line, index) in terminalContent" class="terminal-line">
                             <td class="terminal-line-prefix">&gt;:&nbsp;</td>

@@ -44,6 +44,13 @@ export default {
             secondsTick: null,
             mainClockTick: null,
             systemFailureInterval: null,
+            hieroglyphs: [
+                '\u{132f4}',
+                '\u{133f2}',
+                '\u{13352}',
+                '\u{13142}',
+                '\u{133f1}',
+            ]
         }
     },
     created() {
@@ -133,6 +140,9 @@ export default {
             this.systemFailureInterval = setInterval(() => {
                 this.secondsTick.value = Math.floor(Math.random() * 90 + 10);
                 this.mainClockTick.value = Math.floor(Math.random() * 899 + 100);
+
+                // this.secondsTick.value = this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)]+this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)];
+                // this.mainClockTick.value = this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)]+this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)]+this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)];
             }, 100);
         }
     },
