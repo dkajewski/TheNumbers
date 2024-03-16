@@ -1,19 +1,27 @@
 <template>
-    <div class="clock-frame">
-        <div class="clock-container">
-            <div id="clock" class="tick">
-                <span data-repeat="true" :class="{'system-failure': systemFailureActive}">
-                    <span data-view="flip"></span>
-                </span>
+    <div>
+        <div class="clock-frame">
+            <div class="clock-container">
+                <div id="clock" class="tick">
+                    <span data-repeat="true" :class="{'system-failure': systemFailureActive}">
+                        <span data-view="flip"></span>
+                    </span>
+                </div>
+                <div id="seconds" class="tick">
+                    <span data-repeat="true" class="light-flip" :class="{'system-failure': systemFailureActive}">
+                        <span data-view="flip"></span>
+                    </span>
+                </div>
             </div>
-            <div id="seconds" class="tick">
-                <span data-repeat="true" id="light-flip" :class="{'system-failure': systemFailureActive}">
+        </div>
+        <div class="clock-frame">
+            <div class="clock-container">
+                <div v-for="n in 5" :id="'hieroglyph' + n" class="tick">
                     <span data-view="flip"></span>
-                </span>
+                </div>
             </div>
         </div>
     </div>
-
 </template>
 <script>
 import Tick from '@pqina/flip';
@@ -50,7 +58,8 @@ export default {
                 '\u{13352}',
                 '\u{13142}',
                 '\u{133f1}',
-            ]
+            ],
+            hieroglyphsClocks: [],
         }
     },
     created() {
@@ -135,6 +144,21 @@ export default {
                     }, 1000);
                 }
             });
+
+            // todo: move this somewhere else
+            for (let i = 1; i <=5; i++) {
+                let element = document.getElementById('hieroglyph' + i);
+                this.mainClock = Tick.DOM.create(element, {
+                    credits: false,
+                    value: this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)],
+                    didInit: (tick) => {
+                        Tick.helper.interval(() => {
+                            tick.value = this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)];
+                        }, 100);
+
+                    }
+                });
+            }
         },
         setSystemFailureTimerValues: function () {
             this.systemFailureInterval = setInterval(() => {

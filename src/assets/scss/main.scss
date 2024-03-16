@@ -99,7 +99,7 @@ body {
   }
 }
 
-#light-flip {
+.light-flip {
   &.system-failure {
     .tick-flip-panel {
       background: #880015;
@@ -140,4 +140,8 @@ body {
 .clock-frame {
   display: flex;
   justify-content: center;
+}
+
+.tick-flip {
+  max-width: 36px !important;
 }
