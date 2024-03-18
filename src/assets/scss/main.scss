@@ -99,7 +99,7 @@ body {
   }
 }
 
-.light-flip {
+#hieroglyph4, #hieroglyph5, .light-flip {
   &.system-failure {
     .tick-flip-panel {
       background: #880015;
@@ -113,13 +113,11 @@ body {
   }
 }
 
-#clock {
-  span {
-    &.system-failure {
-      .tick-flip-panel {
-        color: #880015;
-        background-color: #000;
-      }
+#hieroglyph1, #hieroglyph2, #hieroglyph3, #clock {
+  &.system-failure {
+    .tick-flip-panel {
+      color: #880015;
+      background-color: #000;
     }
   }
 }
