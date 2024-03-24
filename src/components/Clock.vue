@@ -29,29 +29,6 @@ import Tick from '@pqina/flip';
 export default {
     data() {
         return {
-            mainClock: null,
-            secondsClock: null,
-            mainClockTimer: null,
-            secondsClockTimer: null,
-            secondsClockStarted: false,
-            mainClockProps: {
-                interval: Tick.helper.duration(60, 'seconds'),
-                valuePerInterval: 1,
-                dateOffset: null,
-                valueOffset: 108,
-                currentValue: 108,
-            },
-            secondsClockProps: {
-                interval: Tick.helper.duration(1, 'seconds'),
-                dateOffset: null,
-                valuePerInterval: 1,
-                currentValue: 59,
-                valueOffset: 59,
-            },
-            systemFailureActive: false,
-            secondsTick: null,
-            mainClockTick: null,
-            systemFailureInterval: null,
             hieroglyphs: [
                 '\u{132f4}',
                 '\u{133f2}',
@@ -60,6 +37,38 @@ export default {
                 '\u{133f1}',
             ],
             hieroglyphsClocks: [],
+            hieroglyphsTimers: [],
+            hieroglyphsStopSec: {
+                1: 11,
+                2: 15,
+                3: 7,
+                4: 6,
+                5: 9
+            },
+            mainClock: null,
+            mainClockTimer: null,
+            mainClockProps: {
+                interval: Tick.helper.duration(60, 'seconds'),
+                valuePerInterval: 1,
+                dateOffset: null,
+                valueOffset: 0,
+                currentValue: 0,
+            },
+            mainClockTick: null,
+            secondsClock: null,
+            secondsClockProps: {
+                interval: Tick.helper.duration(1, 'seconds'),
+                dateOffset: null,
+                valuePerInterval: 1,
+                currentValue: 14,
+                valueOffset: 14,
+            },
+            secondsClockStarted: false,
+            secondsClockTimer: null,
+            secondsTick: null,
+            systemFailureActive: false,
+            systemFailureInterval: null,
+            systemFailureTime: null,
         }
     },
     created() {
@@ -71,6 +80,7 @@ export default {
                 return;
             }
 
+            this.systemFailureTime = Date.now();
             this.systemFailureActive = true;
             this.$emit('system-failure', true);
             this.setSystemFailureTimerValues();
@@ -145,33 +155,44 @@ export default {
                 }
             });
 
-            // todo: move this somewhere else
-            for (let i = 1; i <=5; i++) {
-                let element = document.getElementById('hieroglyph' + i);
-                Tick.DOM.create(element, {
-                    credits: false,
-                    value: this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)],
-                    didInit: (tick) => {
-                        Tick.helper.interval(() => {
-                            tick.value = this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)];
-                        }, 100);
 
-                    }
-                });
-            }
         },
         setSystemFailureTimerValues: function () {
             this.systemFailureInterval = setInterval(() => {
                 this.secondsTick.value = Math.floor(Math.random() * 90 + 10);
                 this.mainClockTick.value = Math.floor(Math.random() * 899 + 100);
-
-                // this.secondsTick.value = this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)]+this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)];
-                // this.mainClockTick.value = this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)]+this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)]+this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)];
             }, 100);
-        }
+        },
+        setupSystemFailureClock: function () {
+            for (let i = 1; i <= 5; i++) {
+                let element = document.getElementById('hieroglyph' + i);
+                this.hieroglyphsTimers[i] = Tick.DOM.create(element, {
+                    credits: false,
+                    value: this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)],
+                    didInit: (tick) => {
+                        Tick.helper.interval(() => {
+                            if (!this.systemFailureActive) {
+                                return;
+                            }
+
+                            let digit = tick._element.id.slice(-1);
+                            let now = Date.now();
+                            this.startSecondsClock();
+                            let diff = (now - this.systemFailureTime) / 1000;
+                            if (diff >= this.hieroglyphsStopSec[digit]) {
+                                tick.value = this.hieroglyphs[digit-1];
+                            } else {
+                                tick.value = this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)];
+                            }
+                        }, 100);
+                    }
+                });
+            }
+        },
     },
     mounted() {
         this.startMainClock();
+        this.setupSystemFailureClock();
     },
     props: {
         clockState: String
