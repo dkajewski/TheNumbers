@@ -55,6 +55,7 @@ export default {
                 currentValue: 0,
             },
             mainClockTick: null,
+            secondsAfterSystemFailureStart: 0,
             secondsClock: null,
             secondsClockProps: {
                 interval: Tick.helper.duration(1, 'seconds'),
@@ -80,8 +81,9 @@ export default {
                 return;
             }
 
-            this.systemFailureTime = Date.now();
+            this.systemFailureTime = Date.now() - (this.secondsAfterSystemFailureStart > 1 ? (this.secondsAfterSystemFailureStart * 1000) : 0);
             this.systemFailureActive = true;
+            this.secondsAfterSystemFailureStart = 0;
             this.$emit('system-failure', true);
             this.setSystemFailureTimerValues();
         },
@@ -102,7 +104,8 @@ export default {
                         let diff = now - this.secondsClockProps.dateOffset;
                         let loops = Math.floor(diff / this.secondsClockProps.interval);
                         this.secondsClockProps.currentValue = this.secondsClockProps.valueOffset - (loops * this.secondsClockProps.valuePerInterval);
-                        if (this.secondsClockProps.currentValue === -1) {
+                        if (this.secondsClockProps.currentValue <= -1) {
+                            this.secondsAfterSystemFailureStart = Math.abs(this.secondsClockProps.currentValue);
                             if (this.mainClockProps.currentValue === 0) {
                                 this.secondsClockTimer.stop();
                                 this.secondsClockProps.currentValue = 0;
