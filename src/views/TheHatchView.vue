@@ -11,7 +11,6 @@ import Clock from '../components/Clock.vue';
         <div class="outer-frame">
             <div class="inner-frame">
                 <div class="screen">
-<!--                    <div>&#x132f4;&#x133f2;&#x13352;&#x13142;&#x133f1;</div>-->
                     <table>
                         <tr v-for="(line, index) in terminalContent" class="terminal-line">
                             <td class="terminal-line-prefix">&gt;:&nbsp;</td>
@@ -27,6 +26,10 @@ import Clock from '../components/Clock.vue';
                                              v-if="(line === terminalContent[terminalContent.length - 1] && terminalContent.length - 1 === index)"
                             >&#x25AE;</span>
                             </td>
+                        </tr>
+                        <tr>
+                            <td class="terminal-line-prefix">&nbsp;&nbsp;</td>
+                            <td class="break-anywhere" v-html="systemFailureText"></td>
                         </tr>
                     </table>
                 </div>
@@ -63,7 +66,13 @@ export default {
                 'CapsLock',
                 'AltGraph',
             ],
+            gameOver: false,
+            maxSecondsAfterSystemFailure: 16,
             systemFailureActive: false,
+            systemFailureInterval: null,
+            systemFailureText: '',
+            systemFailureTime: 0,
+            gameOverInterval: null,
         }
     },
     created() {
@@ -107,10 +116,22 @@ export default {
     methods: {
         activateSystemFailure: function (mode) {
             console.log('System failure!' + mode);
+            this.systemFailureTime = Date.now();
+            this.terminalContent = [this.terminalContent[this.terminalContent.length - 1]];
+            this.systemFailureInterval = setInterval(() => {
+                this.systemFailureText += 'System Failure';
+            }, 600);
+            this.gameOverInterval = setInterval(() => {
+                if (Date.now() > this.systemFailureTime + (this.maxSecondsAfterSystemFailure * 1000)) {
+                    this.gameOver = true;
+                    clearInterval(this.systemFailureInterval);
+                    clearInterval(this.gameOverInterval);
+                }
+            }, 1000);
         },
         executeCommand: function () {
             let command = this.terminalContent[this.terminalContent.length - 1].trim();
-            if (command === '4 8 15 16 23 42') {
+            if (command === '4 8 15 16 23 42' && !this.gameOver) {
                 this.clockState = 'reset|' + Math.random();
             }
 
@@ -208,6 +229,15 @@ export default {
     mounted() {
         this.focusTerminalInput();
     },
-    watch: {}
+    watch: {
+        clockState: function (newState) {
+            newState = newState.split('|')[0];
+            if (newState === 'reset' && !this.gameOver) {
+                this.systemFailureText = '';
+                clearInterval(this.systemFailureInterval);
+                clearInterval(this.gameOverInterval);
+            }
+        }
+    }
 }
 </script>
