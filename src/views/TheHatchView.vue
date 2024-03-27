@@ -1,5 +1,6 @@
 <script setup>
 import Clock from '../components/Clock.vue';
+import Modal from '../components/Modal.vue';
 </script>
 <template>
     <div class="not-visible">
@@ -36,6 +37,8 @@ import Clock from '../components/Clock.vue';
             </div>
         </div>
     </div>
+    <button id="show-modal" @click="showModal = true">Show Modal</button>
+    <Modal v-if="showModal" @close="showModal = false" show />
 </template>
 <script>
 export default {
@@ -73,6 +76,7 @@ export default {
             systemFailureText: '',
             systemFailureTime: 0,
             gameOverInterval: null,
+            showModal: false,
         }
     },
     created() {
