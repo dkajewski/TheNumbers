@@ -1,6 +1,6 @@
 <script setup>
 import Clock from '../components/Clock.vue';
-import Modal from '../components/Modal.vue';
+import EventLog from "../components/EventLog.vue";
 </script>
 <template>
     <div class="not-visible">
@@ -37,8 +37,8 @@ import Modal from '../components/Modal.vue';
             </div>
         </div>
     </div>
-    <button id="show-modal" @click="showModal = true">Show Modal</button>
-    <Modal v-if="showModal" @close="showModal = false" show />
+    <button id="show-modal" v-on:click="showModal = true">Show Modal</button>
+    <EventLog v-if="showModal" v-on:close="showModal = false" show />
 </template>
 <script>
 export default {
