@@ -1,3 +1,6 @@
+<script setup>
+import SystemFailureClock from "./SystemFailureClock.vue";
+</script>
 <template>
     <div>
         <div class="clock-frame" v-show="!systemFailureActive">
@@ -15,11 +18,7 @@
             </div>
         </div>
         <div class="clock-frame" v-show="systemFailureActive">
-            <div class="clock-container">
-                <div v-for="n in 5" :id="'hieroglyph' + n" class="tick system-failure">
-                    <span data-view="flip"></span>
-                </div>
-            </div>
+            <SystemFailureClock v-bind:system-failure-active="systemFailureActive" v-bind:system-failure-time="systemFailureTime"/>
         </div>
     </div>
 </template>
@@ -29,22 +28,6 @@ import Tick from '@pqina/flip';
 export default {
     data() {
         return {
-            hieroglyphs: [
-                '\u{132f4}',
-                '\u{133f2}',
-                '\u{13352}',
-                '\u{13142}',
-                '\u{133f1}',
-            ],
-            hieroglyphsClocks: [],
-            hieroglyphsTimers: [],
-            hieroglyphsStopSec: {
-                1: 11,
-                2: 15,
-                3: 7,
-                4: 6,
-                5: 9
-            },
             mainClock: null,
             mainClockTimer: null,
             mainClockProps: {
@@ -166,36 +149,9 @@ export default {
                 this.mainClockTick.value = Math.floor(Math.random() * 899 + 100);
             }, 100);
         },
-        setupSystemFailureClock: function () {
-            for (let i = 1; i <= 5; i++) {
-                let element = document.getElementById('hieroglyph' + i);
-                this.hieroglyphsTimers[i] = Tick.DOM.create(element, {
-                    credits: false,
-                    value: this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)],
-                    didInit: (tick) => {
-                        Tick.helper.interval(() => {
-                            if (!this.systemFailureActive) {
-                                return;
-                            }
-
-                            let digit = tick._element.id.slice(-1);
-                            let now = Date.now();
-                            this.startSecondsClock();
-                            let diff = (now - this.systemFailureTime) / 1000;
-                            if (diff >= this.hieroglyphsStopSec[digit]) {
-                                tick.value = this.hieroglyphs[digit-1];
-                            } else {
-                                tick.value = this.hieroglyphs[Math.floor(Math.random()*this.hieroglyphs.length)];
-                            }
-                        }, 100);
-                    }
-                });
-            }
-        },
     },
     mounted() {
         this.startMainClock();
-        this.setupSystemFailureClock();
     },
     props: {
         clockState: String
