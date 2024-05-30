@@ -6,22 +6,19 @@
 
                     <div class="modal-header">
                         <slot name="header">
-                            default header
+                            Event Log
                         </slot>
                     </div>
 
                     <div class="modal-body">
                         <slot name="body">
-                            default body
+                            event
                         </slot>
                     </div>
 
                     <div class="modal-footer">
                         <slot name="footer">
-                            default footer
-                            <button class="modal-default-button" @click="$emit('close')">
-                                OK
-                            </button>
+                            <button class="modal-default-button" v-on:click="$emit('close')">OK</button>
                         </slot>
                     </div>
                 </div>

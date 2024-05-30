@@ -7,6 +7,7 @@ import EventLog from "../components/EventLog.vue";
         <textarea id="terminal-input" ref="terminalInput" v-model="terminalInput"></textarea>
     </div>
     <Clock v-bind:clock-state="clockState" v-on:system-failure="activateSystemFailure"/>
+    <div class="button-wrapper"><button id="show-modal" v-on:click="showModal = true">Event Log</button></div>
     <div class="monitor" @click="focusTerminalInput()">
         <!-- todo: frame looks awful, it needs to look nice -->
         <div class="outer-frame">
@@ -37,7 +38,6 @@ import EventLog from "../components/EventLog.vue";
             </div>
         </div>
     </div>
-    <button id="show-modal" v-on:click="showModal = true">Show Modal</button>
     <EventLog v-if="showModal" v-on:close="showModal = false" show />
 </template>
 <script>

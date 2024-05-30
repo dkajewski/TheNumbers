@@ -1,8 +1,8 @@
-@import 'variables.scss';
-@import 'font.scss';
-@import 'animations.scss';
+@import 'variables';
+@import 'font';
+@import 'animations';
 @import '@pqina/flip/dist/flip.css';
-@import 'modal.scss';
+@import 'event_log';
 
 body {
   margin: 0;
@@ -143,4 +143,20 @@ body {
 
 .tick-flip {
   max-width: 36px !important;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  button {
+    font-family: VT323, serif;
+    font-size: 1.5em;
+    padding: 4px 20px;
+    border-radius: 3px;
+    color: $terminal-font-color;
+    background: #000;
+    border: 2px solid $terminal-font-color;
+  }
 }
