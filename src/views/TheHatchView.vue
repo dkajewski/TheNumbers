@@ -41,6 +41,8 @@ import EventLog from "../components/EventLog.vue";
     <EventLog v-if="showModal" v-on:close="showModal = false" show />
 </template>
 <script>
+import Utility from "../helpers/utility";
+import Storage from "../helpers/storage";
 export default {
     data() {
         return {
@@ -135,9 +137,7 @@ export default {
         },
         executeCommand: function () {
             let command = this.terminalContent[this.terminalContent.length - 1].trim();
-            if (command === '4 8 15 16 23 42' && !this.gameOver) {
-                this.clockState = 'reset|' + Math.random();
-            }
+            this.handleClockResetCommand(command);
 
             this.terminalInput = '';
             this.terminalContent.push('');
@@ -180,6 +180,19 @@ export default {
             }
 
             this.updateCursorPosition();
+        },
+        handleClockResetCommand: function (command) {
+            if (command !== '4 8 15 16 23 42' || this.gameOver) {
+                return;
+            }
+
+            this.clockState = 'reset|' + Math.random();
+            let logEntry = {
+                timestamp: Utility.getFormattedTimestamp(new Date()),
+                message: 'accepted'
+            }
+
+            Storage.push('eventLog', logEntry);
         },
         toggleCursorAnimationModel: function () {
             if (Date.now() - this.lastTypedKeyTimestamp > 100) {

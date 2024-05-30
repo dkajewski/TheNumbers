@@ -1,3 +1,5 @@
+@import "variables";
+
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -16,13 +18,14 @@
 }
 
 .modal-container {
-  font-family: VT323, serif;
+  font-family: $terminal-font-family;
   font-size: 1.3em;
+  color: $event-log-color;
   width: 74vw;
   height: 74vh;
   margin: 0 auto;
   padding: 20px 24px;
-  background-color: #e3d6b5ff;
+  background-color: $event-log-background;
   border-radius: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
   transition: all 0.3s ease;

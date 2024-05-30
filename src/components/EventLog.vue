@@ -12,7 +12,10 @@
 
                     <div class="modal-body">
                         <slot name="body">
-                            event
+                            <div v-for="logEntry in eventLog">
+                                <span>{{ logEntry.timestamp }}</span>&nbsp;
+                                <span>{{ logEntry.message }}</span>
+                            </div>
                         </slot>
                     </div>
 
@@ -27,16 +30,18 @@
     </transition>
 </template>
 <script>
+import Storage from "../helpers/storage";
+
 export default {
     data() {
         return {
             eventLog: []
         }
     },
-    created() {
-    },
     methods: {
-
-    }
+    },
+    mounted() {
+        this.eventLog = Storage.get('eventLog');
+    },
 }
 </script>
