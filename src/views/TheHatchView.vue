@@ -42,7 +42,6 @@ import EventLog from "../components/EventLog.vue";
 </template>
 <script>
 import Utility from "../helpers/utility";
-import Storage from "../helpers/storage";
 export default {
     data() {
         return {
@@ -120,8 +119,8 @@ export default {
         setInterval(this.toggleCursorAnimationModel, 1000);
     },
     methods: {
-        activateSystemFailure: function (mode) {
-            console.log('System failure!' + mode);
+        activateSystemFailure: function () {
+            Utility.pushLogEntry('SYSTEM FAILURE');
             this.systemFailureTime = Date.now();
             this.terminalContent = [this.terminalContent[this.terminalContent.length - 1]];
             this.systemFailureInterval = setInterval(() => {
@@ -130,6 +129,7 @@ export default {
             this.gameOverInterval = setInterval(() => {
                 if (Date.now() > this.systemFailureTime + (this.maxSecondsAfterSystemFailure * 1000)) {
                     this.gameOver = true;
+                    Utility.pushLogEntry('THE HATCH IMPLODED. GAME OVER');
                     clearInterval(this.systemFailureInterval);
                     clearInterval(this.gameOverInterval);
                 }
@@ -187,12 +187,8 @@ export default {
             }
 
             this.clockState = 'reset|' + Math.random();
-            let logEntry = {
-                timestamp: Utility.getFormattedTimestamp(new Date()),
-                message: 'accepted'
-            }
-
-            Storage.push('eventLog', logEntry);
+            this.systemFailureText = '';
+            Utility.pushLogEntry('accepted');
         },
         toggleCursorAnimationModel: function () {
             if (Date.now() - this.lastTypedKeyTimestamp > 100) {

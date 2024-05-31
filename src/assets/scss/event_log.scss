@@ -18,10 +18,13 @@
 }
 
 .modal-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   font-family: $terminal-font-family;
   font-size: 1.3em;
   color: $event-log-color;
-  min-height: 40vh;
+  min-height: 47vh;
   margin: 0 auto;
   padding: 20px 24px;
   background-color: $event-log-background;
@@ -30,17 +33,39 @@
   transition: all 0.3s ease;
 }
 
-.modal-header h3 {
-  margin-top: 0;
-  color: #42b983;
+.modal-header {
+  font-size: 1.4em;
 }
 
 .modal-body {
   margin: 20px 0;
 }
 
+.modal-footer {
+  justify-self: flex-end;
+}
+
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  button {
+    &:disabled {
+      color: #696969;
+      border: 2px solid $disabled-btn-color;
+    }
+    margin: 0 10px;
+    border: 2px solid $event-log-color;
+    padding: 6px 8px 4px 10px;
+    background: $event-log-background;
+    color: $event-log-color;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+}
+
 .modal-default-button {
-  float: right;
+  float:right;
+  cursor: pointer;
 }
 
 /*
