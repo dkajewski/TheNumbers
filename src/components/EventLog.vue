@@ -35,7 +35,7 @@
     </transition>
 </template>
 <script>
-import Storage from "../helpers/storage";
+import LocalStorage from "../helpers/localStorage";
 
 export default {
     data() {
@@ -51,7 +51,7 @@ export default {
         },
     },
     mounted() {
-        this.eventLog = Storage.get('eventLog');
+        this.eventLog = LocalStorage.get('eventLog');
     },
 }
 </script>

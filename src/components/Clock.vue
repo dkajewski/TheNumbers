@@ -24,6 +24,7 @@ import SystemFailureClock from "./SystemFailureClock.vue";
 </template>
 <script>
 import Tick from '@pqina/flip';
+import LocalStorage from "../helpers/localStorage";
 
 export default {
     data() {
@@ -34,8 +35,8 @@ export default {
                 interval: Tick.helper.duration(60, 'seconds'),
                 valuePerInterval: 1,
                 dateOffset: null,
-                valueOffset: 0,
-                currentValue: 0,
+                valueOffset: 1,
+                currentValue: 1,
             },
             mainClockTick: null,
             secondsAfterSystemFailureStart: 0,
@@ -44,8 +45,8 @@ export default {
                 interval: Tick.helper.duration(1, 'seconds'),
                 dateOffset: null,
                 valuePerInterval: 1,
-                currentValue: 14,
-                valueOffset: 14,
+                currentValue: 59,
+                valueOffset: 59,
             },
             secondsClockStarted: false,
             secondsClockTimer: null,
@@ -59,6 +60,24 @@ export default {
 
     },
     methods: {
+        getClockStartDate: function () {
+            let clockStartDate = LocalStorage.get('clockStartDate') !== null ? new Date(Date.parse(LocalStorage.get('clockStartDate'))) : new Date();
+            LocalStorage.set('clockStartDate', clockStartDate);
+
+            return clockStartDate.getTime();
+        },
+        setClockStartDate: function (date) {
+            LocalStorage.set('clockStartDate', date);
+        },
+        getSecondsClockStartValue: function () {
+            let clockStartDate = LocalStorage.get('secondsClockStartDate') !== null ? new Date(Date.parse(LocalStorage.get('secondsClockStartDate')) + 1) : new Date();
+            LocalStorage.set('secondsClockStartDate', clockStartDate);
+
+            return clockStartDate.getTime();
+        },
+        setSecondsClockStartValue: function (date) {
+            LocalStorage.set('secondsClockStartDate', date);
+        },
         systemFailure: function () {
             if (this.systemFailureActive) {
                 return;
@@ -75,7 +94,7 @@ export default {
                 return;
             }
 
-            this.secondsClockProps.dateOffset = Date.now();
+            this.secondsClockProps.dateOffset = this.getSecondsClockStartValue();
             let element = document.getElementById('seconds');
             this.secondsClock = Tick.DOM.create(element, {
                 credits: false,
@@ -87,6 +106,7 @@ export default {
                         let diff = now - this.secondsClockProps.dateOffset;
                         let loops = Math.floor(diff / this.secondsClockProps.interval);
                         this.secondsClockProps.currentValue = this.secondsClockProps.valueOffset - (loops * this.secondsClockProps.valuePerInterval);
+                        console.log(this.secondsClockProps.valueOffset, loops, this.secondsClockProps.valuePerInterval);
                         if (this.secondsClockProps.currentValue <= -1) {
                             this.secondsAfterSystemFailureStart = Math.abs(this.secondsClockProps.currentValue);
                             if (this.mainClockProps.currentValue === 0) {
@@ -95,6 +115,7 @@ export default {
                                 this.systemFailure();
                             } else {
                                 this.secondsClockProps.dateOffset += 60000;
+                                LocalStorage.set('secondsClockStartDate', new Date(this.secondsClockProps.dateOffset));
                                 this.secondsClockProps.currentValue = 59;
                             }
                         }
@@ -117,14 +138,18 @@ export default {
             }
 
             clearInterval(this.systemFailureInterval);
-            this.secondsClockProps.dateOffset = Date.now();
-            this.mainClockProps.dateOffset = Date.now();
+            let nowTs = Date.now();
+            let now = new Date(nowTs);
+            this.setClockStartDate(now);
+            this.setSecondsClockStartValue(now);
+            this.secondsClockProps.dateOffset = nowTs;
+            this.mainClockProps.dateOffset = nowTs + 100;
             this.secondsClockTimer.reset();
             this.systemFailureActive = false;
         },
         startMainClock: function() {
             let element = document.getElementById('clock');
-            this.mainClockProps.dateOffset = Date.now();
+            this.mainClockProps.dateOffset = this.getClockStartDate();
             this.mainClock = Tick.DOM.create(element, {
                 credits: false,
                 value: this.mainClockProps.valueOffset,

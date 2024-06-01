@@ -1,4 +1,4 @@
-import Storage from "./storage";
+import LocalStorage from "./localStorage";
 
 export default class Utility
 {
@@ -17,7 +17,7 @@ export default class Utility
     }
 
     static pushLogEntry(message) {
-        Storage.push('eventLog', {
+        LocalStorage.push('eventLog', {
             timestamp: Utility.getFormattedTimestamp(new Date()),
             message: message
         });

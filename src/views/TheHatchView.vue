@@ -69,6 +69,7 @@ export default {
                 'Alt',
                 'CapsLock',
                 'AltGraph',
+                'Insert'
             ],
             gameOver: false,
             maxSecondsAfterSystemFailure: 16,
