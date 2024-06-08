@@ -35,8 +35,8 @@ export default {
                 interval: Tick.helper.duration(60, 'seconds'),
                 valuePerInterval: 1,
                 dateOffset: null,
-                valueOffset: 1,
-                currentValue: 1,
+                valueOffset: 2,
+                currentValue: 2,
             },
             mainClockTick: null,
             secondsAfterSystemFailureStart: 0,
@@ -57,26 +57,33 @@ export default {
         }
     },
     created() {
-
+        this.setClocksCurrentValues();
     },
     methods: {
-        getClockStartDate: function () {
+        getClockStartTimestamp: function () {
             let clockStartDate = LocalStorage.get('clockStartDate') !== null ? new Date(Date.parse(LocalStorage.get('clockStartDate'))) : new Date();
             LocalStorage.set('clockStartDate', clockStartDate);
-
             return clockStartDate.getTime();
         },
         setClockStartDate: function (date) {
             LocalStorage.set('clockStartDate', date);
         },
-        getSecondsClockStartValue: function () {
-            let clockStartDate = LocalStorage.get('secondsClockStartDate') !== null ? new Date(Date.parse(LocalStorage.get('secondsClockStartDate')) + 1) : new Date();
-            LocalStorage.set('secondsClockStartDate', clockStartDate);
-
-            return clockStartDate.getTime();
+        setClocksCurrentValues: function () {
+            let clockStartTimestamp = this.getClockStartTimestamp();
+            let now = Date.now();
+            let diff = now - clockStartTimestamp;
+            let loops = Math.floor(diff / this.secondsClockProps.interval);
+            this.secondsClockProps.dateOffset = clockStartTimestamp;
+            this.setMainClockCurrentValue(loops);
+            let endTimestamp = clockStartTimestamp + (this.mainClockProps.valueOffset * 60000) + (this.secondsClockProps.valueOffset * 1000);
+            this.secondsClockProps.dateOffset = endTimestamp - ((this.mainClockProps.currentValue + 1) * 60000);
+            if (endTimestamp < now) {
+                this.secondsAfterSystemFailureStart = parseInt(((now - endTimestamp) / 1000).toString());
+                this.systemFailure();
+            }
         },
-        setSecondsClockStartValue: function (date) {
-            LocalStorage.set('secondsClockStartDate', date);
+        setMainClockCurrentValue: function (loops) {
+            this.mainClockProps.currentValue = Math.min(this.mainClockProps.currentValue - parseInt((loops/60).toString()), this.mainClockProps.valueOffset);
         },
         systemFailure: function () {
             if (this.systemFailureActive) {
@@ -94,7 +101,6 @@ export default {
                 return;
             }
 
-            this.secondsClockProps.dateOffset = this.getSecondsClockStartValue();
             let element = document.getElementById('seconds');
             this.secondsClock = Tick.DOM.create(element, {
                 credits: false,
@@ -106,7 +112,6 @@ export default {
                         let diff = now - this.secondsClockProps.dateOffset;
                         let loops = Math.floor(diff / this.secondsClockProps.interval);
                         this.secondsClockProps.currentValue = this.secondsClockProps.valueOffset - (loops * this.secondsClockProps.valuePerInterval);
-                        console.log(this.secondsClockProps.valueOffset, loops, this.secondsClockProps.valuePerInterval);
                         if (this.secondsClockProps.currentValue <= -1) {
                             this.secondsAfterSystemFailureStart = Math.abs(this.secondsClockProps.currentValue);
                             if (this.mainClockProps.currentValue === 0) {
@@ -114,8 +119,8 @@ export default {
                                 this.secondsClockProps.currentValue = 0;
                                 this.systemFailure();
                             } else {
+                                this.mainClockProps.currentValue = Math.max(this.mainClockProps.currentValue - parseInt((loops/60).toString()), 0);
                                 this.secondsClockProps.dateOffset += 60000;
-                                LocalStorage.set('secondsClockStartDate', new Date(this.secondsClockProps.dateOffset));
                                 this.secondsClockProps.currentValue = 59;
                             }
                         }
@@ -141,28 +146,24 @@ export default {
             let nowTs = Date.now();
             let now = new Date(nowTs);
             this.setClockStartDate(now);
-            this.setSecondsClockStartValue(now);
             this.secondsClockProps.dateOffset = nowTs;
             this.mainClockProps.dateOffset = nowTs + 100;
+            this.mainClockProps.currentValue = this.mainClockProps.valueOffset;
             this.secondsClockTimer.reset();
             this.systemFailureActive = false;
         },
         startMainClock: function() {
             let element = document.getElementById('clock');
-            this.mainClockProps.dateOffset = this.getClockStartDate();
+            this.mainClockProps.dateOffset = this.getClockStartTimestamp();
             this.mainClock = Tick.DOM.create(element, {
                 credits: false,
                 value: this.mainClockProps.valueOffset,
                 didInit: (tick) => {
                     this.mainClockTick = tick;
                     this.mainClockTimer = Tick.helper.interval(() => {
-                        let now = Date.now();
                         this.startSecondsClock();
-                        let diff = now - this.mainClockProps.dateOffset;
-                        let loops = Math.floor(diff / this.mainClockProps.interval);
-                        this.mainClockProps.currentValue = Math.max(this.mainClockProps.valueOffset - (loops * this.mainClockProps.valuePerInterval), 0);
                         tick.value = ('00' + this.mainClockProps.currentValue).slice(-3);
-                    }, 1000);
+                    }, 100);
                 }
             });
 
