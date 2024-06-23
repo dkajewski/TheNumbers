@@ -35,8 +35,8 @@ export default {
                 interval: Tick.helper.duration(60, 'seconds'),
                 valuePerInterval: 1,
                 dateOffset: null,
-                valueOffset: 2,
-                currentValue: 2,
+                valueOffset: 1,
+                currentValue: 1,
             },
             mainClockTick: null,
             secondsAfterSystemFailureStart: 0,
@@ -93,7 +93,7 @@ export default {
             this.systemFailureTime = Date.now() - (this.secondsAfterSystemFailureStart > 1 ? (this.secondsAfterSystemFailureStart * 1000) : 0);
             this.systemFailureActive = true;
             this.secondsAfterSystemFailureStart = 0;
-            this.$emit('system-failure', true);
+            this.$emit('system-failure', this.systemFailureTime);
             this.setSystemFailureTimerValues();
         },
         startSecondsClock: function() {

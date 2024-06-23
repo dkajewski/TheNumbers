@@ -120,13 +120,19 @@ export default {
         setInterval(this.toggleCursorAnimationModel, 1000);
     },
     methods: {
-        activateSystemFailure: function () {
+        activateSystemFailure: function (systemFailureTime) {
             Utility.pushLogEntry('SYSTEM FAILURE');
-            this.systemFailureTime = Date.now();
+            this.systemFailureTime = systemFailureTime;
             this.terminalContent = [this.terminalContent[this.terminalContent.length - 1]];
             this.systemFailureInterval = setInterval(() => {
-                this.systemFailureText += 'System Failure';
-            }, 600);
+                let secondsAfterSystemFailure = Math.min(Math.floor((Date.now() - this.systemFailureTime) / 1000), this.maxSecondsAfterSystemFailure);
+                let systemFailureText = '';
+                for (let i = 0; i < secondsAfterSystemFailure; i++) {
+                    systemFailureText += 'System Failure';
+                }
+
+                this.systemFailureText = systemFailureText;
+            }, 1000);
             this.gameOverInterval = setInterval(() => {
                 if (Date.now() > this.systemFailureTime + (this.maxSecondsAfterSystemFailure * 1000)) {
                     this.gameOver = true;
@@ -139,6 +145,7 @@ export default {
         executeCommand: function () {
             let command = this.terminalContent[this.terminalContent.length - 1].trim();
             this.handleClockResetCommand(command);
+            this.handleResetAfterHatchImplosionCommand(command);
 
             this.terminalInput = '';
             this.terminalContent.push('');
@@ -187,9 +194,23 @@ export default {
                 return;
             }
 
-            this.clockState = 'reset|' + Math.random();
+            this.setClockState('reset');
             this.systemFailureText = '';
             Utility.pushLogEntry('accepted');
+        },
+        handleResetAfterHatchImplosionCommand: function (command) {
+            if (command !== 'reset' || !this.gameOver) {
+                return;
+            }
+
+            this.gameOver = false;
+            this.setClockState('reset');
+            this.systemFailureTime = 0;
+            Utility.clearLog();
+            Utility.pushLogEntry('A FATAL ERROR OCCURRED, RESETTING SUCCESSFULLY');
+        },
+        setClockState: function (clockState) {
+            this.clockState = clockState + '|' + Math.random();
         },
         toggleCursorAnimationModel: function () {
             if (Date.now() - this.lastTypedKeyTimestamp > 100) {

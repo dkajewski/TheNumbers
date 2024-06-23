@@ -22,4 +22,8 @@ export default class Utility
             message: message
         });
     }
+
+    static clearLog() {
+        LocalStorage.set('eventLog', []);
+    }
 }
