@@ -199,6 +199,7 @@ export default {
 
             this.setClockState('reset');
             this.systemFailureText = '';
+            this.terminalContent = [];
             Utility.pushLogEntry('accepted');
         },
         handleResetAfterHatchImplosionCommand: function (command) {
