@@ -14,25 +14,27 @@ import EventLog from "../components/EventLog.vue";
             <div class="inner-frame">
                 <div class="screen">
                     <table>
-                        <tr v-for="(line, index) in terminalContent" class="terminal-line">
-                            <td class="terminal-line-prefix">&gt;:&nbsp;</td>
-                            <td class="break-anywhere">
-                                <span v-for="(letter, i) in getStringAsArray(index)"
-                                      v-bind:id="`line-${index}-letter-${i}`">
-                                    {{ letter }}
-                                </span><span id="cursor"
-                                             v-bind:class="{
-                                            'terminal-cursor': !typingActive,
-                                            'cursor-absolute': !cursorPositionDefault,
-                                        }"
-                                             v-if="(line === terminalContent[terminalContent.length - 1] && terminalContent.length - 1 === index)"
-                            >&#x25AE;</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="terminal-line-prefix">&nbsp;&nbsp;</td>
-                            <td class="break-anywhere" v-html="systemFailureText"></td>
-                        </tr>
+                        <tbody>
+                            <tr v-for="(line, index) in terminalContent" class="terminal-line">
+                                <td class="terminal-line-prefix">&gt;:&nbsp;</td>
+                                <td class="break-anywhere">
+                                    <span v-for="(letter, i) in getStringAsArray(index)"
+                                          v-bind:id="`line-${index}-letter-${i}`">
+                                        {{ letter }}
+                                    </span><span id="cursor"
+                                                 v-bind:class="{
+                                                'terminal-cursor': !typingActive,
+                                                'cursor-absolute': !cursorPositionDefault,
+                                            }"
+                                                 v-if="(line === terminalContent[terminalContent.length - 1] && terminalContent.length - 1 === index)"
+                                >&#x25AE;</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="terminal-line-prefix">&nbsp;&nbsp;</td>
+                                <td class="break-anywhere" v-html="systemFailureText"></td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
@@ -87,6 +89,7 @@ export default {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 this.executeCommand();
+                document.querySelector(".screen").scrollTop = document.querySelector(".screen").scrollHeight;
                 this.currentCursorPosition.line++;
                 this.currentCursorPosition.letter = 0;
                 this.cursorPositionDefault = true;
